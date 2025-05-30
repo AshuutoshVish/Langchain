@@ -2,35 +2,45 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
-from langchain.schema.runnable import RunnableParallel
+from langchain.schema.runnable import RunnableParallel, RunnableBranch, RunnableLambda
+from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
+from typing import Literal
 
 load_dotenv()
 
-prompt1 = PromptTemplate(template= "Generate short and simple notes from the following text \n {text}", input_variables=['text'])
-prompt2 = PromptTemplate(template= "Generate 5 short question answers from the following text \n {text}", input_variables=['text'])
-prompt3 = PromptTemplate(template= "Merge the notes and quiz into a single document \n notes -> {notes} and quiz -> {quiz}", input_variables=["notes", "quiz"])
-
 model = ChatGoogleGenerativeAI(model='gemini-2.0-flash')
-parser = StrOutputParser()
+class Feedback(BaseModel):
+    sentiment : Literal['positive', 'negative'] = Field(description="Give the sentiment of the feedback")
 
-parallel_chain = RunnableParallel({'notes' : prompt1 | model | parser,
-                                   'quiz': prompt2 | model | parser
-                                   })
-merge_chain = prompt3 | model | parser
-chain = parallel_chain | merge_chain
+feedback_parser = PydanticOutputParser(pydantic_object=Feedback)
+str_parser = StrOutputParser()
 
-text = """
-Support vector machines (SVMs) are a set of supervised learning methods used for classification, regression and outliers detection.
-The advantages of support vector machines are:
-Effective in high dimensional spaces.
-Still effective in cases where number of dimensions is greater than the number of samples.
-Uses a subset of training points in the decision function (called support vectors), so it is also memory efficient.
-Versatile: different Kernel functions can be specified for the decision function. Common kernels are provided, but it is also possible to specify custom kernels.
-The disadvantages of support vector machines include:
-If the number of features is much greater than the number of samples, avoid over-fitting in choosing Kernel functions and regularization term is crucial.
-SVMs do not directly provide probability estimates, these are calculated using an expensive five-fold cross-validation (see Scores and probabilities, below).
-The support vector machines in scikit-learn support both dense (numpy.ndarray and convertible to that by numpy.asarray) and sparse (any scipy.sparse) sample vectors as input. However, to use an SVM to make predictions for sparse data, it must have been fit on such data. For optimal performance, use C-ordered numpy.ndarray (dense) or scipy.sparse.csr_matrix (sparse) with dtype=float64.
-"""
+classifier_prompt  = PromptTemplate(template= "Classify the sentiment of the following feedback text into positive or negative \n {feedback} \n {format_instructions}",
+                         input_variables=['feedback'],
+                         partial_variables={'format_instructions': feedback_parser.get_format_instructions()})
 
-result = chain.invoke({'text': text})
+classifier_chain = classifier_prompt | model | feedback_parser
+
+
+positive_prompt = PromptTemplate(template=("You are a customer support assistant. Respond warmly and appreciatively to the following positive customer feedback:\n"
+                                           "\"{feedback}\"\n\n"
+                                           "Your response should be professional and enthusiastic."),
+                                           input_variables=['feedback'])
+
+negative_prompt = PromptTemplate(template=("You are a customer support assistant. Respond professionally and empathetically to the following negative customer feedback:\n"
+                                           "\"{feedback}\"\n\n"
+                                           "Your response should be brief, sincere, and helpful."),
+                                           input_variables=['feedback'])
+
+branch_chain = RunnableBranch(
+    (lambda x : x.sentiment=='positive', positive_prompt | model | str_parser),
+    (lambda x : x.sentiment=='negative', negative_prompt | model | str_parser),
+    RunnableLambda(lambda x: "Could not find sentiment")
+)
+
+chain = classifier_chain | branch_chain
+result = chain.invoke({'feedback': "The product was good and useful after week of use"})
 print(result)
+
+chain.get_graph().print_ascii()
