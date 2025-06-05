@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Interview Summary</title>
+</head>
+<body>
+    <h1>Interview Summary</h1>
+    {% for item in answers %}
+        <h3>Q{{ loop.index }}: {{ item.question }}</h3>
+        <p><b>Your answer:</b> {{ item.answer }}</p>
+        <pre><b>Feedback:</b> {{ item.feedback }}</pre>
+        <hr>
+    {% endfor %}
+    <a href="{{ url_for('index') }}">Start Over</a>
+</body>
+</html>

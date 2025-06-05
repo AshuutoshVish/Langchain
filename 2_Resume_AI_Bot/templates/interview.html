@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Interview Session</title>
+</head>
+<body>
+    <h2>Question:</h2>
+    <p>{{ question }}</p>
+    <form method="post">
+        <textarea name="answer" rows="6" cols="60" required></textarea><br><br>
+        <input type="submit" value="Submit Answer" />
+    </form>
+    {% if feedback %}
+        <h3>Evaluation:</h3>
+        <pre>{{ feedback }}</pre>
+    {% endif %}
+</body>
+</html>

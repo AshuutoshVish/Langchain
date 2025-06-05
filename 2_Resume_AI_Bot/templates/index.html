@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Resume Interview Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input[type="file"],
+        input[type="text"],
+        input[type="submit"] {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-left: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload Resume For Job and Skills</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="resume">Select Resume (PDF or DOCX):</label>
+        <input type="file" id="resume" name="resume" accept=".pdf,.docx" required />
+        <input type="submit" value="Start Interview" />
+    </form>
+</body>
+</html>

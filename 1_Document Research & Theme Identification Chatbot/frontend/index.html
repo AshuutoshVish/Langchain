@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theme Identifier Chatbot</title>
+</head>
+<body>
+  <h2>Upload Document</h2>
+  <form id="uploadForm">
+    <input type="file" name="file" id="fileInput" />
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const fileInput = document.getElementById('fileInput');
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+    });
+  </script>
+</body>
+</html>

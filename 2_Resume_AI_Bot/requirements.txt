@@ -1,0 +1,7 @@
+Flask
+pdfplumber
+docx2txt
+langchain
+langchain-google-genai
+python-dotenv
+langchain_community

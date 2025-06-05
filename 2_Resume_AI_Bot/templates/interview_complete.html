@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Interview Complete</title>
+</head>
+<body>
+    <h1>Interview Complete</h1>
+
+    {% for item in feedbacks %}
+        <div style="margin-bottom: 30px;">
+            <h3>Question:</h3>
+            <p>{{ item.question }}</p>
+
+            <h3>Your Answer:</h3>
+            <p>{{ item.answer }}</p>
+
+            <h3>Evaluation:</h3>
+            <pre>{{ item.feedback }}</pre>
+        </div>
+    {% endfor %}
+</body>
+</html>
