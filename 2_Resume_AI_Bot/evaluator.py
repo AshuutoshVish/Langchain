@@ -6,11 +6,12 @@ import os
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
-llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.2, google_api_key=api_key)
+llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash',
+                             temperature=0.2,
+                             google_api_key=api_key)
 
-prompt_template = PromptTemplate(
-    input_variables=["question", "answer"],
-    template="""
+prompt_template = PromptTemplate(input_variables=["question", "answer"],
+                                 template="""
 You are an AI interview assistant.
 
 Evaluate the following candidate response based on the question. 

@@ -1,19 +1,17 @@
-import os
-import pdfplumber
-import docx2txt
-from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
+from dotenv import load_dotenv
+import pdfplumber
+import docx2txt
+import os
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
-
 llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0.2, google_api_key=api_key)
 
-info_template = PromptTemplate(
-    input_variables=["resume_text"],
-    template="""
+info_template = PromptTemplate(input_variables=["resume_text"],
+                               template="""
 You are a helpful resume parsing assistant.
 
 Extract the following from the resume:

@@ -9,7 +9,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.urandom(24) #For production I have to set a fixed secret key
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -48,7 +48,7 @@ def index():
 
             # Clean up uploaded file
             os.remove(filepath)
-            return render_template('resume_info.html', resume_info=structured_info)
+            return render_template('interview_summary.html', resume_info=structured_info)
         else:
             return "File type not allowed", 400
     return render_template('index.html')
